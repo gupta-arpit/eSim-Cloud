@@ -6,7 +6,6 @@ import { MatSnackBar } from '@angular/material';
 import { Title } from '@angular/platform-browser';
 import { MatDialog } from '@angular/material';
 import { environment } from 'src/environments/environment';
-import { AlertService } from '../alert/alert-service/alert.service';
 
 /**
  * For Handling Time ie. Prevent moment error
@@ -74,7 +73,7 @@ export class DashboardComponent implements OnInit {
    * @param snackbar Material Snackbar
    * @param title Document Title
    */
-  constructor(private api: ApiService, private snackbar: MatSnackBar, private title: Title, private alertService: AlertService) {
+  constructor(private api: ApiService, private snackbar: MatSnackBar, private title: Title) {
     this.title.setTitle('Dashboard | Arduino On Cloud');
   }
   /**
@@ -109,14 +108,18 @@ export class DashboardComponent implements OnInit {
       this.onCloudMessage = 'Please Login to See Circuit';
     }
   }
-
   /**
-   * Function to call when user confirms the ciruit deletion
+   * Delete the Project from Database
    * @param id Project id
    * @param offline Is Offline Circuit
    * @param index Project's index in their list
    */
-  private deleteCircuitConfirm(id, offline, index) {
+  DeleteCircuit(id, offline, index) {
+    // ASK for user confirmation
+    const ok = confirm('Are You Sure You want to Delete Circuit');
+    if (!ok) {
+      return;
+    }
     // Show loading animation
     window['showLoading']();
 
@@ -125,7 +128,7 @@ export class DashboardComponent implements OnInit {
       SaveOffline.Delete(id, () => {
         this.items.splice(index, 1);
         this.closeProject();
-        AlertService.showAlert('Done Deleting');
+        alert('Done Deleting');
         window['hideLoading']();
       });
     } else {
@@ -136,29 +139,18 @@ export class DashboardComponent implements OnInit {
           // Remove From the list
           this.online.splice(index, 1);
         } else {
-          AlertService.showAlert('Something went wrong');
+          alert('Something went wrong');
         }
         this.closeProject();
         window['hideLoading']();
       }, err => {
-        AlertService.showAlert('Something went wrong');
+        alert('Something went wrong');
         window['hideLoading']();
         console.log(err);
       });
     }
-  }
 
-  /**
-   * Delete the Project from Database
-   * @param id Project id
-   * @param offline Is Offline Circuit
-   * @param index Project's index in their list
-   */
-  DeleteCircuit(id, offline, index) {
-    // ASK for user confirmation
-    AlertService.showConfirm('Are You Sure You want to Delete Circuit', () => this.deleteCircuitConfirm(id, offline, index));
   }
-
   /**
    * Disanle Project Sharing
    * @param item Project Card Object
@@ -167,7 +159,7 @@ export class DashboardComponent implements OnInit {
     const token = Login.getToken();
     this.EnableSharing(item.save_id, token, (v) => {
       item.shared = v.shared;
-      AlertService.showAlert('Sharing Disabled!');
+      alert('Sharing Disabled!');
     }, false);
   }
   /**
@@ -204,11 +196,11 @@ export class DashboardComponent implements OnInit {
         console.log(out);
         this.online = out;
       }, err => {
-        AlertService.showAlert('Something went wrong');
+        alert('Something went wrong');
         console.log(err);
       });
     } else {
-      AlertService.showAlert('Please Login!');
+      alert('Please Login!');
     }
   }
   /**
@@ -227,7 +219,7 @@ export class DashboardComponent implements OnInit {
     const done = document.execCommand('copy');
     // if not able to copy show alert with url else show user a snackbar
     if (!done) {
-      AlertService.showAlert('Not able to Copy ' + tmpEl.value);
+      alert('Not able to Copy ' + tmpEl.value);
     } else {
       this.snackbar.open('Copied', null, {
         duration: 2000
@@ -272,7 +264,7 @@ export class DashboardComponent implements OnInit {
     // Get token if logged in
     const token = Login.getToken();
     if (!token) {
-      AlertService.showAlert('Please Login');
+      alert('Please Login');
       return;
     }
 
@@ -307,7 +299,7 @@ export class DashboardComponent implements OnInit {
           if (selected.shared) {
             window.open(map[index], '_blank');
           } else {
-            AlertService.showAlert('Not Able to Share Circuit');
+            alert('Not Able to Share Circuit');
           }
         });
       }
@@ -323,7 +315,7 @@ export class DashboardComponent implements OnInit {
           if (selected.shared) {
             window.open(`mailto:?${back}`, '_blank');
           } else {
-            AlertService.showAlert('Not Able to Share Circuit');
+            alert('Not Able to Share Circuit');
           }
         });
       }
@@ -338,7 +330,7 @@ export class DashboardComponent implements OnInit {
           if (selected.shared) {
             this.CopyUrlToClipBoard(copyUrl);
           } else {
-            AlertService.showAlert('Not Able to Share Circuit');
+            alert('Not Able to Share Circuit');
           }
         });
       }

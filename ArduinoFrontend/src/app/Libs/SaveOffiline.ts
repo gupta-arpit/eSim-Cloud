@@ -1,5 +1,3 @@
-import { AlertService } from '../alert/alert-service/alert.service';
-
 /**
  * Declare window so that custom created function don't throw error
  */
@@ -28,7 +26,7 @@ export class SaveOffline {
       // Database was not able to open/create
       request.onerror = (err) => {
         console.log(err);
-        AlertService.showAlert('Error Occurred for Ofline Circuit (Private Window Can be a Reason)');
+        alert('Error Occurred for Ofline Circuit (Private Window Can be a Reason)');
       };
 
       // if everything works call the callback with result
@@ -49,7 +47,7 @@ export class SaveOffline {
     }
 
     // IndexedDB not found
-    AlertService.showAlert('Save Offline Feature Will Not Work');
+    alert('Save Offline Feature Will Not Work');
     return false;
   }
   /**
@@ -65,7 +63,7 @@ export class SaveOffline {
       if (callback) {
         callback(mydata);
       }
-      AlertService.showAlert('Done saved.');
+      alert('Done Saved');
     })) {
       return;
     }
@@ -165,7 +163,7 @@ export class SaveOffline {
         .put(mydata);
 
       ok.onsuccess = (_) => {
-        AlertService.showAlert('Done updating.');
+        alert('Done Updating');
         if (callback) {
           callback(mydata);
         }
@@ -198,7 +196,7 @@ export class SaveOffline {
       const ok = objectStore.get(parseInt(id, 10));
 
       ok.onerror = () => {
-        AlertService.showAlert('Unable to retrieve data from database!');
+        alert('Unable to retrieve data from database!');
       };
 
       ok.onsuccess = () => {
